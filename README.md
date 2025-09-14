@@ -1,4 +1,4 @@
-# 🎰 BlackJack Casino Simulator
+# BlackJack Casino Simulator
 
 A professional, feature-rich BlackJack simulator built with Python Flask and modern web technologies. Experience the thrill of casino BlackJack with realistic gameplay, beautiful animations, and authentic casino features.
 
@@ -7,35 +7,35 @@ A professional, feature-rich BlackJack simulator built with Python Flask and mod
 ![Flask](https://img.shields.io/badge/Flask-2.3+-red)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-## ✨ Features
+## Features
 
-### 🎮 Core Gameplay
+### Core Gameplay
 - **Standard Casino Rules**: Follows authentic BlackJack rules
 - **Multiple Actions**: Hit, Stand, Double Down, Split, Insurance
 - **Realistic Payouts**: 3:2 for BlackJack, 2:1 for Insurance
 - **Dealer AI**: Automatic dealer play following casino rules (hit on 16, stand on 17+)
 
-### 🎨 Visual Experience
+### Visual Experience
 - **Casino Table Design**: Authentic green felt table with wooden rails
 - **Realistic Cards**: Beautiful card designs with smooth dealing animations
 - **3D Casino Chips**: Professional chip design with hover effects
 - **Smooth Animations**: Cards deal one at a time with realistic physics
 - **Responsive Design**: Works perfectly on desktop and mobile
 
-### 💰 Betting System
+### Betting System
 - **Chip-Based Betting**: Click chips to build your bet (additive system)
 - **Undo/Clear**: Remove chips with undo or clear all
 - **All-In Option**: Bet your entire balance with one click
 - **Balance Management**: Add funds when balance runs low
 - **Auto-Next Hand**: Seamless continuous gameplay
 
-### 🃏 Advanced Features
+### Advanced Features
 - **Split Hands**: Split pairs and play multiple hands simultaneously
 - **Insurance**: Protect against dealer BlackJack
 - **Statistics Tracking**: Track wins, losses, BlackJacks, and profit
 - **Session Persistence**: Game state maintained across browser sessions
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **Python 3.8+**: Core programming language
@@ -56,7 +56,7 @@ A professional, feature-rich BlackJack simulator built with Python Flask and mod
 - **JSON**: Data serialization and API responses
 - **SVG**: Scalable favicon and graphics
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -89,7 +89,7 @@ python run_game.py
 ```
 Choose between command-line or web version.
 
-## 🎯 How to Play
+## How to Play
 
 ### Basic Gameplay
 1. **Place Your Bet**: Click casino chips to build your bet amount
@@ -113,7 +113,7 @@ Choose between command-line or web version.
 - **Push**: Tie with dealer (bet returned)
 - **Lose**: Go over 21 or dealer beats you
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 BlackJack-Simulator/
@@ -121,6 +121,7 @@ BlackJack-Simulator/
 ├── BlackJack Simulator.py # Command-line version
 ├── run_game.py           # Game launcher
 ├── requirements.txt      # Python dependencies
+├── Procfile             # Heroku deployment configuration
 ├── README.md            # This file
 ├── static/
 │   └── favicon.svg      # Website favicon
@@ -128,7 +129,7 @@ BlackJack-Simulator/
     └── index.html       # Web interface
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Game Settings
 - **Starting Balance**: $1000
@@ -144,7 +145,7 @@ Edit `app.py` to modify:
 - Payout ratios
 - Game rules
 
-## 🌐 Deployment
+## Deployment
 
 ### Local Development
 ```bash
@@ -155,14 +156,14 @@ Runs on `http://localhost:5000` with debug mode enabled.
 ### Production Deployment
 
 #### Option 1: Heroku
-1. Create a `Procfile`:
+1. The `Procfile` is already configured:
    ```
    web: gunicorn app:app
    ```
 
-2. Add to `requirements.txt`:
+2. Dependencies are already in `requirements.txt`:
    ```
-   gunicorn==20.1.0
+   gunicorn==21.2.0
    ```
 
 3. Deploy to Heroku:
@@ -206,7 +207,7 @@ docker build -t blackjack-casino .
 docker run -p 5000:5000 blackjack-casino
 ```
 
-## 🎨 Customization
+## Customization
 
 ### Styling
 - Modify CSS in `templates/index.html` to change colors, fonts, or layout
@@ -225,7 +226,7 @@ docker run -p 5000:5000 blackjack-casino
 - Add multiplayer support
 - Create tournament modes
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -245,14 +246,14 @@ app.run(debug=True, port=5001)
 - Ensure all files are in correct directories
 - Verify Flask static file serving
 
-## 📊 Performance
+## Performance
 
 - **Load Time**: < 2 seconds
 - **Memory Usage**: < 50MB
 - **Concurrent Users**: Supports multiple simultaneous players
 - **Mobile Performance**: Optimized for mobile devices
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -260,18 +261,18 @@ app.run(debug=True, port=5001)
 4. Test thoroughly
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Casino BlackJack rules and regulations
 - Modern web design principles
 - Flask documentation and community
 - Font Awesome for icons
 
-## 📞 Support
+## Support
 
 For questions, issues, or feature requests:
 - Create an issue on GitHub
@@ -280,4 +281,4 @@ For questions, issues, or feature requests:
 
 ---
 
-**Enjoy your BlackJack experience! 🎰♠️♥️♣️♦️**
+**Enjoy your BlackJack experience!**
