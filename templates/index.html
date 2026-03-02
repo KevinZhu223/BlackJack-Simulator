@@ -1,1142 +1,1020 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackJack Casino</title>
-    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: 
-                radial-gradient(ellipse at top, #1a1a2e 0%, #16213e 50%, #0f3460 100%),
-                linear-gradient(45deg, #1a1a2e 25%, transparent 25%),
-                linear-gradient(-45deg, #1a1a2e 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #1a1a2e 75%),
-                linear-gradient(-45deg, transparent 75%, #1a1a2e 75%);
-            background-size: 100% 100%, 40px 40px, 40px 40px, 40px 40px, 40px 40px;
-            background-position: 0 0, 0 0, 0 20px, 20px -20px, -20px 0px;
-            min-height: 100vh;
-            color: #f8f9fa;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 3rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .game-area {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .table {
-            background: 
-                radial-gradient(ellipse at center, #1a5f1a 0%, #0d3d0d 70%),
-                linear-gradient(45deg, #2d5016 25%, transparent 25%),
-                linear-gradient(-45deg, #2d5016 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #2d5016 75%),
-                linear-gradient(-45deg, transparent 75%, #2d5016 75%);
-            background-size: 100% 100%, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
-            background-position: 0 0, 0 0, 0 10px, 10px -10px, -10px 0px;
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 
-                0 15px 40px rgba(0,0,0,0.4),
-                inset 0 0 50px rgba(0,0,0,0.3);
-            border: 8px solid #8B4513;
-            position: relative;
-        }
-
-        .table::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            pointer-events: none;
-        }
-
-        .table::after {
-            content: 'BLACKJACK';
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #ffd700;
-            font-size: 1.4rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            letter-spacing: 4px;
-        }
-
-        .dealer-area, .player-area {
-            margin-bottom: 30px;
-        }
-
-        .area-title {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            text-align: center;
-            color: #ffd700;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .hands-container {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .hand-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 200px;
-        }
-
-        .hand-section.active {
-            border: 2px solid #ffd700;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(255, 215, 0, 0.1);
-        }
-
-        .hand {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .card {
-            width: 85px;
-            height: 120px;
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 10px;
-            box-shadow: 
-                0 6px 12px rgba(0,0,0,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.8);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 48%, rgba(0,0,0,0.05) 49%, rgba(0,0,0,0.05) 51%, transparent 52%);
-            pointer-events: none;
-        }
-
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 
-                0 10px 20px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.9);
-        }
-
-        .card.red {
-            color: #e74c3c;
-        }
-
-        .card.black {
-            color: #2c3e50;
-        }
-
-        .card-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .card-suit {
-            font-size: 1.5rem;
-            text-align: center;
-        }
-
-        .card-bottom {
-            transform: rotate(180deg);
-        }
-
-        .hidden-card {
-            background: linear-gradient(145deg, #1a237e, #283593);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-back {
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 20%, #3f51b5, #1a237e),
-                linear-gradient(45deg, #1a237e 25%, transparent 25%),
-                linear-gradient(-45deg, #1a237e 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #1a237e 75%),
-                linear-gradient(-45deg, transparent 75%, #1a237e 75%);
-            background-size: 100% 100%, 8px 8px, 8px 8px, 8px 8px, 8px 8px;
-            background-position: 0 0, 0 0, 0 4px, 4px -4px, -4px 0px;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .card-back::before {
-            content: '♠';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .score {
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #ffd700;
-            margin-top: 10px;
-        }
-
-        .controls {
-            background: 
-                linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)),
-                radial-gradient(circle at top left, rgba(255,215,0,0.1), transparent);
-            border-radius: 20px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(255,255,255,0.2);
-            box-shadow: 
-                0 8px 32px rgba(0,0,0,0.3),
-                inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-
-        .balance {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .balance h3 {
-            color: #ffd700;
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .balance .amount {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #2ecc71;
-        }
-
-        .betting-area {
-            margin-bottom: 20px;
-        }
-
-        .chip-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .chip {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 4px solid #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 6px 12px rgba(0,0,0,0.4),
-                inset 0 2px 4px rgba(255,255,255,0.3),
-                inset 0 -2px 4px rgba(0,0,0,0.2);
-            position: relative;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .chip::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            right: 8px;
-            bottom: 8px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.3);
-            pointer-events: none;
-        }
-
-        .chip::after {
-            content: '';
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            right: 12px;
-            bottom: 12px;
-            border-radius: 50%;
-            border: 1px solid rgba(0,0,0,0.2);
-            pointer-events: none;
-        }
-
-        .chip:hover {
-            transform: translateY(-4px) scale(1.08);
-            box-shadow: 
-                0 8px 16px rgba(0,0,0,0.5),
-                inset 0 2px 4px rgba(255,255,255,0.4),
-                inset 0 -2px 4px rgba(0,0,0,0.3);
-        }
-
-        .chip.selected {
-            transform: translateY(-6px) scale(1.12);
-            box-shadow: 
-                0 10px 20px rgba(0,0,0,0.6),
-                inset 0 2px 4px rgba(255,255,255,0.5),
-                inset 0 -2px 4px rgba(0,0,0,0.4);
-        }
-
-        .chip-5 { 
-            background: radial-gradient(circle at 30% 30%, #ff6b6b, #e74c3c, #c0392b);
-            color: white;
-        }
-        .chip-10 { 
-            background: radial-gradient(circle at 30% 30%, #74b9ff, #3498db, #2980b9);
-            color: white;
-        }
-        .chip-25 { 
-            background: radial-gradient(circle at 30% 30%, #55efc4, #2ecc71, #27ae60);
-            color: white;
-        }
-        .chip-50 { 
-            background: radial-gradient(circle at 30% 30%, #fdcb6e, #f39c12, #e67e22);
-            color: white;
-        }
-        .chip-100 { 
-            background: radial-gradient(circle at 30% 30%, #a29bfe, #9b59b6, #8e44ad);
-            color: white;
-        }
-        .chip-250 { 
-            background: radial-gradient(circle at 30% 30%, #636e72, #34495e, #2c3e50);
-            color: white;
-        }
-        .chip-500 { 
-            background: radial-gradient(circle at 30% 30%, #fd79a8, #e84393, #d63031);
-            color: white;
-        }
-        .chip-1000 { 
-            background: radial-gradient(circle at 30% 30%, #00b894, #1abc9c, #16a085);
-            color: white;
-        }
-        .chip-allin { 
-            background: radial-gradient(circle at 30% 30%, #ff7675, #ff6b6b, #ee5a52);
-            color: white;
-        }
-
-        .current-bet {
-            text-align: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-        }
-
-        .current-bet .amount {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ffd700;
-        }
-
-        .bet-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .btn-primary {
-            background: linear-gradient(145deg, #3498db, #2980b9);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(145deg, #2ecc71, #27ae60);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(145deg, #f39c12, #e67e22);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(145deg, #e74c3c, #c0392b);
-            color: white;
-        }
-
-        .btn-info {
-            background: linear-gradient(145deg, #1abc9c, #16a085);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .game-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .insurance-area {
-            background: rgba(255, 193, 7, 0.1);
-            border: 2px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .insurance-area h4 {
-            color: #ffc107;
-            margin-bottom: 10px;
-        }
-
-        .insurance-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .message {
-            text-align: center;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .message.success {
-            background: rgba(46, 204, 113, 0.2);
-            border: 2px solid #2ecc71;
-            color: #2ecc71;
-        }
-
-        .message.error {
-            background: rgba(231, 76, 60, 0.2);
-            border: 2px solid #e74c3c;
-            color: #e74c3c;
-        }
-
-        .message.info {
-            background: rgba(52, 152, 219, 0.2);
-            border: 2px solid #3498db;
-            color: #3498db;
-        }
-
-        .statistics {
-            background: rgba(0,0,0,0.2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .statistics h3 {
-            color: #ffd700;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 5px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid #ffd700;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .card-deal-animation {
-            animation: dealCard 0.8s ease-out;
-        }
-
-        .card-deal-animation-delayed {
-            animation: dealCard 0.8s ease-out forwards;
-            animation-delay: 0.4s;
-            opacity: 0;
-        }
-
-        @keyframes dealCard {
-            0% {
-                transform: translateX(-200px) rotate(-15deg) scale(0.8);
-                opacity: 0;
-            }
-            50% {
-                transform: translateX(-50px) rotate(-5deg) scale(0.9);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateX(0) rotate(0deg) scale(1);
-                opacity: 1;
-            }
-        }
-
-        .card-flip {
-            animation: flipCard 0.6s ease-in-out;
-        }
-
-        @keyframes flipCard {
-            0% {
-                transform: rotateY(0deg);
-            }
-            50% {
-                transform: rotateY(90deg);
-            }
-            100% {
-                transform: rotateY(0deg);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .game-area {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .card {
-                width: 60px;
-                height: 84px;
-            }
-            
-            .card-value {
-                font-size: 1rem;
-            }
-            
-            .card-suit {
-                font-size: 1.2rem;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlackJack Card-Counting Trainer</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:radial-gradient(ellipse at top,#1a1a2e 0%,#16213e 50%,#0f3460 100%);min-height:100vh;color:#f8f9fa;overflow-x:hidden}
+.container{max-width:1280px;margin:0 auto;padding:15px 20px}
+
+/* ===== HEADER ===== */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.header h1{font-size:2.2rem;text-shadow:2px 2px 4px rgba(0,0,0,.5);color:#ffd700}
+.header h1 .suit{color:#e74c3c;margin:0 6px}
+
+/* Toggle switch */
+.learn-toggle{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);padding:8px 18px;border-radius:30px;border:1px solid rgba(255,215,0,.25);cursor:pointer;user-select:none;transition:all .3s}
+.learn-toggle:hover{background:rgba(255,215,0,.12)}
+.learn-toggle .label{font-weight:600;font-size:.95rem}
+.switch{position:relative;width:48px;height:26px;background:#555;border-radius:13px;transition:background .3s}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .3s}
+.switch.on{background:#2ecc71}
+.switch.on::after{transform:translateX(22px)}
+
+/* ===== GAME LAYOUT ===== */
+.game-area{display:grid;grid-template-columns:1fr 320px;gap:24px;margin-bottom:24px}
+
+/* ===== TABLE ===== */
+.table{background:radial-gradient(ellipse at center,#1a5f1a 0%,#0d3d0d 70%);border-radius:22px;padding:30px 35px 25px;box-shadow:0 15px 40px rgba(0,0,0,.4),inset 0 0 50px rgba(0,0,0,.3);border:7px solid #8B4513;position:relative;min-height:420px}
+.table::before{content:'';position:absolute;top:16px;left:16px;right:16px;bottom:16px;border:2px solid rgba(255,255,255,.08);border-radius:18px;pointer-events:none}
+
+/* Shoe indicator */
+.shoe-bar-wrap{position:absolute;top:12px;right:24px;display:flex;align-items:center;gap:8px;font-size:.8rem;opacity:.85}
+.shoe-bar{width:120px;height:10px;background:rgba(0,0,0,.35);border-radius:5px;overflow:hidden}
+.shoe-bar-fill{height:100%;background:linear-gradient(90deg,#2ecc71,#f39c12,#e74c3c);border-radius:5px;transition:width .6s}
+.shoe-label{color:#ccc}
+
+/* areas */
+.dealer-area,.player-area{margin-bottom:20px}
+.area-title{font-size:1.3rem;margin-bottom:12px;text-align:center;color:#ffd700;text-shadow:1px 1px 2px rgba(0,0,0,.5)}
+.hands-container{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.hand-section{display:flex;flex-direction:column;align-items:center;min-width:180px;padding:8px;border-radius:10px;transition:.3s}
+.hand-section.active{border:2px solid #ffd700;background:rgba(255,215,0,.08)}
+.hand{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;min-height:120px;align-items:center}
+.score{text-align:center;font-size:1.15rem;font-weight:700;color:#ffd700}
+
+/* ===== CARDS ===== */
+.card{width:78px;height:112px;background:linear-gradient(145deg,#fff,#f0f0f0);border-radius:9px;display:flex;flex-direction:column;justify-content:space-between;padding:8px;box-shadow:0 5px 12px rgba(0,0,0,.35);transition:transform .3s;position:relative;border:1px solid rgba(0,0,0,.1)}
+.card:hover{transform:translateY(-6px) scale(1.02)}
+.card.red{color:#e74c3c}
+.card.black{color:#2c3e50}
+.card-value{font-size:1.1rem;font-weight:700}
+.card-suit{font-size:1.35rem;text-align:center}
+.card-bottom{transform:rotate(180deg)}
+.hidden-card{background:linear-gradient(145deg,#1a237e,#283593);border:none}
+.card-back{width:100%;height:100%;background:repeating-conic-gradient(#1a237e 0% 25%,#283593 0% 50%) 50%/12px 12px;border-radius:7px;display:flex;align-items:center;justify-content:center}
+.card-back::after{content:'♠';font-size:1.8rem;color:rgba(255,255,255,.6);text-shadow:1px 1px 3px rgba(0,0,0,.4)}
+.card-deal{animation:dealCard .5s ease-out both}
+@keyframes dealCard{0%{transform:translateY(-80px) rotate(-8deg) scale(.7);opacity:0}100%{transform:none;opacity:1}}
+
+/* Results */
+.result-banner{text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:1.15rem;margin-top:10px;animation:fadeInUp .4s ease-out}
+.result-banner.win{background:rgba(46,204,113,.18);border:2px solid #2ecc71;color:#2ecc71}
+.result-banner.lose,.result-banner.bust{background:rgba(231,76,60,.18);border:2px solid #e74c3c;color:#e74c3c}
+.result-banner.push{background:rgba(241,196,15,.18);border:2px solid #f1c40f;color:#f1c40f}
+.result-banner.blackjack{background:rgba(255,215,0,.2);border:2px solid #ffd700;color:#ffd700;font-size:1.3rem}
+@keyframes fadeInUp{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:none}}
+
+/* ===== SIDEBAR ===== */
+.sidebar{display:flex;flex-direction:column;gap:16px}
+.panel{background:linear-gradient(145deg,rgba(255,255,255,.1),rgba(255,255,255,.04));border-radius:16px;padding:18px;border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+
+/* Balance */
+.balance{text-align:center}
+.balance h3{color:#ffd700;font-size:1.2rem;margin-bottom:4px}
+.balance .amount{font-size:1.8rem;font-weight:700;color:#2ecc71}
+
+/* Chips */
+.chip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.chip{width:62px;height:62px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .25s;box-shadow:0 4px 10px rgba(0,0,0,.35),inset 0 2px 3px rgba(255,255,255,.25);text-shadow:1px 1px 2px rgba(0,0,0,.5);color:#fff;position:relative}
+.chip::before{content:'';position:absolute;inset:7px;border-radius:50%;border:2px dashed rgba(255,255,255,.25);pointer-events:none}
+.chip:hover{transform:translateY(-3px) scale(1.06)}
+.chip.selected{transform:translateY(-5px) scale(1.1);box-shadow:0 6px 16px rgba(255,215,0,.5)}
+.chip-5{background:radial-gradient(circle at 30% 30%,#ff6b6b,#c0392b)}
+.chip-10{background:radial-gradient(circle at 30% 30%,#74b9ff,#2980b9)}
+.chip-25{background:radial-gradient(circle at 30% 30%,#55efc4,#27ae60)}
+.chip-50{background:radial-gradient(circle at 30% 30%,#fdcb6e,#e67e22)}
+.chip-100{background:radial-gradient(circle at 30% 30%,#a29bfe,#8e44ad)}
+.chip-500{background:radial-gradient(circle at 30% 30%,#fd79a8,#d63031)}
+.chip-allin{background:radial-gradient(circle at 30% 30%,#ffd700,#e67e22)}
+.current-bet{text-align:center;margin-bottom:10px;padding:8px;background:rgba(0,0,0,.2);border-radius:8px}
+.current-bet .amount{font-size:1.3rem;font-weight:700;color:#ffd700}
+.bet-row{display:flex;gap:8px;margin-bottom:8px}
+.bet-row .btn{flex:1}
+
+/* Buttons */
+.btn{padding:10px 16px;border:none;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .25s;text-transform:uppercase;letter-spacing:.5px}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-success{background:linear-gradient(145deg,#2ecc71,#27ae60);color:#fff}
+.btn-warning{background:linear-gradient(145deg,#f39c12,#e67e22);color:#fff}
+.btn-danger{background:linear-gradient(145deg,#e74c3c,#c0392b);color:#fff}
+.btn-info{background:linear-gradient(145deg,#1abc9c,#16a085);color:#fff}
+.btn-primary{background:linear-gradient(145deg,#3498db,#2980b9);color:#fff}
+.btn-dark{background:linear-gradient(145deg,#636e72,#2d3436);color:#fff}
+.btn-gold{background:linear-gradient(145deg,#ffd700,#e6a800);color:#1a1a2e}
+.btn-sm{padding:7px 12px;font-size:.8rem}
+
+/* Game actions (2×2 grid) */
+.game-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Insurance */
+.insurance-panel{background:rgba(255,193,7,.08);border:2px solid #ffc107;border-radius:12px;padding:14px;text-align:center}
+.insurance-panel h4{color:#ffc107;margin-bottom:8px}
+.insurance-btns{display:flex;gap:10px;justify-content:center;margin-top:8px}
+
+/* Balance top-up */
+.topup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+/* ===== COUNT TRAINER PANEL ===== */
+.trainer-panel{border:2px solid rgba(255,215,0,.3);background:linear-gradient(145deg,rgba(255,215,0,.06),rgba(255,215,0,.02))}
+.trainer-panel h3{color:#ffd700;text-align:center;margin-bottom:12px;font-size:1.1rem}
+.trainer-panel h3 i{margin-right:6px}
+.count-display{display:flex;gap:10px;margin-bottom:12px}
+.count-box{flex:1;text-align:center;padding:10px;background:rgba(0,0,0,.25);border-radius:10px}
+.count-box .label{font-size:.75rem;color:#aaa;margin-bottom:3px}
+.count-box .val{font-size:1.5rem;font-weight:800}
+.count-box .val.positive{color:#2ecc71}
+.count-box .val.negative{color:#e74c3c}
+.count-box .val.neutral{color:#f1c40f}
+.count-box .val.hidden-count{color:#888;font-size:1.1rem}
+.trainer-actions{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+
+/* Hi-Lo reference */
+.hilo-ref{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;font-size:.8rem;text-align:center}
+.hilo-ref .hilo-group{padding:8px;border-radius:8px}
+.hilo-ref .plus{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);color:#2ecc71}
+.hilo-ref .zero{background:rgba(149,165,166,.15);border:1px solid rgba(149,165,166,.3);color:#95a5a6}
+.hilo-ref .minus{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:#e74c3c}
+.hilo-ref .cards-list{font-weight:700;font-size:.95rem;margin-bottom:2px}
+.hilo-ref .val-label{font-size:.7rem;opacity:.8}
+
+/* Counting accuracy */
+.accuracy-bar{margin-top:8px}
+.accuracy-bar .bar-bg{height:8px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden;margin-top:3px}
+.accuracy-bar .bar-fill{height:100%;border-radius:4px;transition:width .4s;background:linear-gradient(90deg,#e74c3c,#f39c12,#2ecc71)}
+.accuracy-stats{display:flex;justify-content:space-between;font-size:.8rem;color:#aaa;margin-top:4px}
+
+/* Strategy toast */
+.strat-toast{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;font-weight:700;font-size:.95rem;z-index:1000;transform:translateX(110%);transition:transform .35s ease;box-shadow:0 6px 20px rgba(0,0,0,.4);max-width:340px}
+.strat-toast.show{transform:translateX(0)}
+.strat-toast.correct{background:#27ae60;color:#fff}
+.strat-toast.wrong{background:#c0392b;color:#fff}
+
+/* Reshuffle banner */
+.shuffle-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.85);color:#ffd700;padding:24px 48px;border-radius:16px;font-size:1.4rem;font-weight:700;z-index:999;border:2px solid #ffd700;animation:fadeInOut 2.5s ease-in-out forwards;pointer-events:none;text-align:center}
+@keyframes fadeInOut{0%{opacity:0;transform:translate(-50%,-50%) scale(.8)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}85%{opacity:1}100%{opacity:0}}
+
+/* ===== STATISTICS ===== */
+.statistics{font-size:.85rem}
+.statistics h3{color:#ffd700;margin-bottom:10px;text-align:center;font-size:1rem}
+.stat-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.stat-row:last-child{border:none}
+
+/* ===== MODALS ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:900;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(145deg,#1e2a3a,#162035);border:2px solid rgba(255,215,0,.3);border-radius:20px;padding:30px;max-width:480px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal h2{color:#ffd700;text-align:center;margin-bottom:18px;font-size:1.4rem}
+.modal-input{width:100%;padding:14px;font-size:1.4rem;text-align:center;border:2px solid rgba(255,215,0,.3);border-radius:10px;background:rgba(0,0,0,.3);color:#fff;outline:none;margin-bottom:14px;font-weight:700}
+.modal-input:focus{border-color:#ffd700}
+.modal-result{text-align:center;padding:16px;border-radius:12px;margin-bottom:14px;font-weight:700;font-size:1.1rem;display:none}
+.modal-result.correct{background:rgba(46,204,113,.15);border:2px solid #2ecc71;color:#2ecc71;display:block}
+.modal-result.close{background:rgba(241,196,15,.15);border:2px solid #f1c40f;color:#f1c40f;display:block}
+.modal-result.wrong{background:rgba(231,76,60,.15);border:2px solid #e74c3c;color:#e74c3c;display:block}
+.modal-counts{display:flex;gap:12px;justify-content:center;margin-bottom:14px}
+.modal-counts .mc{text-align:center;padding:10px 18px;background:rgba(0,0,0,.25);border-radius:10px}
+.modal-counts .mc .lbl{font-size:.75rem;color:#aaa}
+.modal-counts .mc .v{font-size:1.4rem;font-weight:800;color:#ffd700}
+
+/* Tutorial */
+.tutorial-content h3{color:#ffd700;margin:16px 0 8px;font-size:1.1rem}
+.tutorial-content p{color:#ccc;line-height:1.6;margin-bottom:8px;font-size:.9rem}
+.tutorial-content .card-values{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.tutorial-content .cv{padding:12px;border-radius:10px;text-align:center}
+.tutorial-content .cv.plus{background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.3)}
+.tutorial-content .cv.plus .num{color:#2ecc71}
+.tutorial-content .cv.zero{background:rgba(149,165,166,.12);border:1px solid rgba(149,165,166,.3)}
+.tutorial-content .cv.zero .num{color:#95a5a6}
+.tutorial-content .cv.minus{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.3)}
+.tutorial-content .cv.minus .num{color:#e74c3c}
+.tutorial-content .cv .cards-label{font-weight:700;font-size:1rem;margin-bottom:2px}
+.tutorial-content .cv .num{font-size:1.5rem;font-weight:800}
+.tutorial-content .tip{background:rgba(52,152,219,.1);border-left:3px solid #3498db;padding:10px 14px;border-radius:0 8px 8px 0;margin:8px 0;color:#74b9ff;font-size:.85rem}
+
+/* Minimized count modal tab */
+.count-modal-mini{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(145deg,#ffd700,#e6a800);color:#1a1a2e;padding:12px 28px;border-radius:30px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,215,0,.4);z-index:950;display:none;font-size:.95rem;transition:transform .2s}
+.count-modal-mini:hover{transform:translateX(-50%) scale(1.05)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.modal-min-btn{background:none;border:2px solid rgba(255,215,0,.3);color:#ffd700;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-min-btn:hover{background:rgba(255,215,0,.15);border-color:#ffd700}
+.kbd{display:inline-block;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:1px 6px;font-size:.65rem;font-family:monospace;color:#aaa;margin-left:4px;vertical-align:middle}
+
+/* Responsive */
+@media(max-width:900px){
+    .game-area{grid-template-columns:1fr}
+    .header h1{font-size:1.6rem}
+    .card{width:60px;height:86px;padding:6px}
+    .card-value{font-size:.9rem}
+    .card-suit{font-size:1.1rem}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-spade"></i> BlackJack Casino <i class="fas fa-heart"></i></h1>
-            <p>Welcome to the ultimate BlackJack experience!</p>
-        </div>
-
-        <div class="game-area">
-            <div class="table">
-                <div class="dealer-area">
-                    <div class="area-title">Dealer's Hand</div>
-                    <div class="hand" id="dealer-hand">
-                        <!-- Dealer cards will be inserted here -->
-                    </div>
-                    <div class="score" id="dealer-score">Score: 0</div>
-                </div>
-
-                <div class="player-area">
-                    <div class="area-title">Your Hand</div>
-                    <div class="hands-container" id="hands-container">
-                        <div class="hand-section">
-                            <div class="hand" id="player-hand">
-                                <!-- Player cards will be inserted here -->
-                            </div>
-                            <div class="score" id="player-score">Score: 0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="message-area"></div>
-            </div>
-
-            <div class="controls">
-                <div class="balance">
-                    <h3>Balance</h3>
-                    <div class="amount" id="balance">$1000</div>
-                </div>
-
-                <div class="betting-area" id="betting-area">
-                    <div class="current-bet">
-                        <div>Current Bet:</div>
-                        <div class="amount" id="current-bet-amount">$0</div>
-                    </div>
-                    
-                    <div class="chip-container">
-                        <div class="chip chip-5" onclick="selectChip(5)">$5</div>
-                        <div class="chip chip-10" onclick="selectChip(10)">$10</div>
-                        <div class="chip chip-25" onclick="selectChip(25)">$25</div>
-                        <div class="chip chip-50" onclick="selectChip(50)">$50</div>
-                        <div class="chip chip-100" onclick="selectChip(100)">$100</div>
-                        <div class="chip chip-250" onclick="selectChip(250)">$250</div>
-                        <div class="chip chip-500" onclick="selectChip(500)">$500</div>
-                        <div class="chip chip-1000" onclick="selectChip(1000)">$1000</div>
-                        <div class="chip chip-allin" onclick="selectChip('allin')">ALL IN</div>
-                    </div>
-                    
-                    <div class="bet-controls">
-                        <button class="btn btn-warning" onclick="undoLastChip()" style="flex: 1; margin-right: 5px;">Undo</button>
-                        <button class="btn btn-danger" onclick="clearAllChips()" style="flex: 1; margin-left: 5px;">Clear</button>
-                    </div>
-                    <button class="btn btn-success" onclick="placeBet()" style="width: 100%; margin-top: 10px;" id="place-bet-btn">Place Bet</button>
-                </div>
-
-                <div class="balance-topup" id="balance-topup" style="display: none;">
-                    <h4>Add Balance</h4>
-                    <div class="chip-container">
-                        <div class="chip chip-100" onclick="addBalance(100)">+$100</div>
-                        <div class="chip chip-250" onclick="addBalance(250)">+$250</div>
-                        <div class="chip chip-500" onclick="addBalance(500)">+$500</div>
-                        <div class="chip chip-1000" onclick="addBalance(1000)">+$1000</div>
-                        <div class="chip chip-2500" onclick="addBalance(2500)">+$2500</div>
-                        <div class="chip chip-5000" onclick="addBalance(5000)">+$5000</div>
-                    </div>
-                </div>
-
-                <div class="insurance-area" id="insurance-area" style="display: none;">
-                    <h4>Insurance Available</h4>
-                    <p>Dealer shows an Ace. Would you like insurance?</p>
-                    <div class="insurance-buttons">
-                        <button class="btn btn-warning" onclick="takeInsurance(true)">Yes</button>
-                        <button class="btn btn-danger" onclick="takeInsurance(false)">No</button>
-                    </div>
-                </div>
-
-                <div class="game-actions" id="game-actions" style="display: none;">
-                    <button class="btn btn-success" onclick="hit()">Hit</button>
-                    <button class="btn btn-warning" onclick="stand()">Stand</button>
-                    <button class="btn btn-info" onclick="doubleDown()" id="double-btn">Double</button>
-                    <button class="btn btn-primary" onclick="split()" id="split-btn">Split</button>
-                </div>
-
-
-                <div class="statistics">
-                    <h3>Statistics</h3>
-                    <div class="stat-row">
-                        <span>Hands Played:</span>
-                        <span id="hands-played">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Hands Won:</span>
-                        <span id="hands-won">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Hands Lost:</span>
-                        <span id="hands-lost">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Blackjacks:</span>
-                        <span id="blackjacks">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span>Net Profit:</span>
-                        <span id="net-profit">$0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Processing...</p>
+<div class="container">
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <h1><span class="suit">♠</span>BlackJack Trainer<span class="suit" style="color:#e74c3c">♥</span></h1>
+        <div class="learn-toggle" onclick="toggleLearnMode()">
+            <span class="label">Learn Mode</span>
+            <div class="switch" id="learn-switch"></div>
         </div>
     </div>
 
-    <script>
-        let gameState = {};
-        let currentBet = 0;
-        let selectedChip = null;
+    <!-- ===== GAME AREA ===== -->
+    <div class="game-area">
+        <!-- TABLE -->
+        <div class="table">
+            <div class="shoe-bar-wrap" id="shoe-wrap" style="display:none">
+                <span class="shoe-label">Shoe</span>
+                <div class="shoe-bar"><div class="shoe-bar-fill" id="shoe-fill" style="width:0%"></div></div>
+                <span class="shoe-label" id="shoe-pct">0%</span>
+            </div>
 
-        function showMessage(text, type = 'info') {
-            const messageArea = document.getElementById('message-area');
-            messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
-            setTimeout(() => {
-                messageArea.innerHTML = '';
-            }, 3000);
+            <div class="dealer-area">
+                <div class="area-title">Dealer's Hand</div>
+                <div class="hand" id="dealer-hand"></div>
+                <div class="score" id="dealer-score"></div>
+            </div>
+
+            <div class="player-area">
+                <div class="area-title">Your Hand</div>
+                <div class="hands-container" id="hands-container"></div>
+            </div>
+
+            <div id="result-area"></div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <!-- Balance -->
+            <div class="panel balance">
+                <h3><i class="fas fa-coins"></i> Balance</h3>
+                <div class="amount" id="balance">$1000</div>
+            </div>
+
+            <!-- Betting -->
+            <div class="panel" id="betting-panel">
+                <div class="current-bet">
+                    <div style="font-size:.85rem;color:#aaa">Current Bet</div>
+                    <div class="amount" id="bet-display">$0</div>
+                </div>
+                <div class="chip-grid">
+                    <div class="chip chip-5" onclick="addChip(5)">$5</div>
+                    <div class="chip chip-10" onclick="addChip(10)">$10</div>
+                    <div class="chip chip-25" onclick="addChip(25)">$25</div>
+                    <div class="chip chip-50" onclick="addChip(50)">$50</div>
+                    <div class="chip chip-100" onclick="addChip(100)">$100</div>
+                    <div class="chip chip-500" onclick="addChip(500)">$500</div>
+                    <div class="chip chip-allin" onclick="addChip('all')">ALL IN</div>
+                </div>
+                <div class="bet-row">
+                    <button class="btn btn-warning btn-sm" onclick="undoChip()">Undo</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearChips()">Clear</button>
+                </div>
+                <button class="btn btn-success" onclick="placeBet()" style="width:100%">Deal</button>
+            </div>
+
+            <!-- Top-up -->
+            <div class="panel" id="topup-panel" style="display:none">
+                <h4 style="color:#ffd700;text-align:center;margin-bottom:10px">Add Funds</h4>
+                <div class="topup-grid">
+                    <button class="btn btn-sm btn-info" onclick="addBal(500)">+$500</button>
+                    <button class="btn btn-sm btn-info" onclick="addBal(1000)">+$1000</button>
+                    <button class="btn btn-sm btn-info" onclick="addBal(5000)">+$5000</button>
+                </div>
+            </div>
+
+            <!-- Insurance -->
+            <div class="panel insurance-panel" id="insurance-panel" style="display:none">
+                <h4>Insurance?</h4>
+                <p style="font-size:.85rem;color:#ccc">Dealer shows an Ace</p>
+                <div class="insurance-btns">
+                    <button class="btn btn-warning btn-sm" onclick="takeInsurance(true)">Yes</button>
+                    <button class="btn btn-danger btn-sm" onclick="takeInsurance(false)">No</button>
+                </div>
+            </div>
+
+            <!-- Game Actions -->
+            <div class="panel game-actions" id="actions-panel" style="display:none">
+                <button class="btn btn-success" onclick="doAction('hit')"><i class="fas fa-plus"></i> Hit <span class="kbd">H</span></button>
+                <button class="btn btn-warning" onclick="doAction('stand')"><i class="fas fa-hand"></i> Stand <span class="kbd">S</span></button>
+                <button class="btn btn-info" onclick="doAction('double')" id="btn-double"><i class="fas fa-coins"></i> Double <span class="kbd">D</span></button>
+                <button class="btn btn-primary" onclick="doAction('split')" id="btn-split"><i class="fas fa-scissors"></i> Split <span class="kbd">P</span></button>
+            </div>
+
+            <!-- Hint button (learn mode only) -->
+            <div id="hint-wrap" style="display:none">
+                <button class="btn btn-gold btn-sm" onclick="showHint()" style="width:100%"><i class="fas fa-lightbulb"></i> Strategy Hint</button>
+            </div>
+
+            <!-- New Hand (shown when finished) -->
+            <div class="panel" id="newhand-panel" style="display:none;text-align:center">
+                <button class="btn btn-success" onclick="startNewHand()" style="width:100%"><i class="fas fa-redo"></i> New Hand <span class="kbd">N</span></button>
+            </div>
+
+            <!-- ===== COUNT TRAINER PANEL ===== -->
+            <div class="panel trainer-panel" id="trainer-panel" style="display:none">
+                <h3><i class="fas fa-brain"></i> Count Trainer</h3>
+
+                <div class="count-display" id="count-display">
+                    <div class="count-box">
+                        <div class="label">Running Count</div>
+                        <div class="val hidden-count" id="rc-val">???</div>
+                    </div>
+                    <div class="count-box">
+                        <div class="label">True Count</div>
+                        <div class="val hidden-count" id="tc-val">???</div>
+                    </div>
+                </div>
+
+                <div class="trainer-actions">
+                    <button class="btn btn-primary btn-sm" onclick="openCountModal(false)"><i class="fas fa-question-circle"></i> Check My Count</button>
+                    <button class="btn btn-dark btn-sm" onclick="togglePeek()" id="peek-btn"><i class="fas fa-eye"></i> Peek at Count</button>
+                    <button class="btn btn-gold btn-sm" onclick="openTutorial()"><i class="fas fa-book"></i> How to Count Cards</button>
+                    <button class="btn btn-info btn-sm" onclick="newShoe()"><i class="fas fa-sync"></i> New Shoe</button>
+                </div>
+
+                <!-- Hi-Lo Reference -->
+                <div class="hilo-ref">
+                    <div class="hilo-group plus">
+                        <div class="cards-list">2-6</div>
+                        <div class="val-label">+1</div>
+                    </div>
+                    <div class="hilo-group zero">
+                        <div class="cards-list">7-9</div>
+                        <div class="val-label">0</div>
+                    </div>
+                    <div class="hilo-group minus">
+                        <div class="cards-list">10-A</div>
+                        <div class="val-label">−1</div>
+                    </div>
+                </div>
+
+                <!-- Accuracy -->
+                <div class="accuracy-bar" id="accuracy-section">
+                    <div style="display:flex;justify-content:space-between;font-size:.85rem">
+                        <span style="color:#ffd700">Count Accuracy</span>
+                        <span id="acc-pct" style="color:#2ecc71">0%</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" id="acc-bar" style="width:0%"></div></div>
+                    <div class="accuracy-stats">
+                        <span><span id="acc-correct">0</span> correct</span>
+                        <span><span id="acc-close">0</span> close</span>
+                        <span><span id="acc-total">0</span> total</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="panel statistics">
+                <h3><i class="fas fa-chart-bar"></i> Statistics</h3>
+                <div class="stat-row"><span>Hands Played</span><span id="st-played">0</span></div>
+                <div class="stat-row"><span>Won</span><span id="st-won" style="color:#2ecc71">0</span></div>
+                <div class="stat-row"><span>Lost</span><span id="st-lost" style="color:#e74c3c">0</span></div>
+                <div class="stat-row"><span>Pushed</span><span id="st-pushed">0</span></div>
+                <div class="stat-row"><span>Blackjacks</span><span id="st-bj" style="color:#ffd700">0</span></div>
+                <div class="stat-row"><span>Net Profit</span><span id="st-net">$0</span></div>
+                <div class="stat-row" id="strat-row" style="display:none"><span>Strategy Accuracy</span><span id="st-strat">0%</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== COUNT CHECK MODAL ===== -->
+<div class="modal-overlay" id="count-modal">
+    <div class="modal" id="count-modal-dialog">
+        <div class="modal-header">
+            <h2 style="margin:0"><i class="fas fa-brain"></i> What's the Running Count?</h2>
+            <button class="modal-min-btn" onclick="minimizeCountModal()" title="Minimize — look at the cards"><i class="fas fa-window-minimize"></i></button>
+        </div>
+        <p style="text-align:center;color:#aaa;margin-bottom:14px;font-size:.9rem">
+            Think about all cards dealt since the last shuffle.
+        </p>
+        <input type="number" class="modal-input" id="count-guess" placeholder="Enter count…"
+               onkeydown="if(event.key==='Enter')submitCount()">
+        <button class="btn btn-gold" onclick="submitCount()" style="width:100%;margin-bottom:14px" id="count-submit-btn">
+            Check My Count
+        </button>
+        <div class="modal-result" id="count-result"></div>
+        <div class="modal-counts" id="count-reveal" style="display:none">
+            <div class="mc"><div class="lbl">Running Count</div><div class="v" id="modal-rc">0</div></div>
+            <div class="mc"><div class="lbl">True Count</div><div class="v" id="modal-tc">0</div></div>
+        </div>
+        <button class="btn btn-success" onclick="closeCountModal()" style="width:100%;display:none" id="count-next-btn">
+            Next Hand →
+        </button>
+    </div>
+</div>
+
+<!-- ===== TUTORIAL MODAL ===== -->
+<div class="modal-overlay" id="tutorial-modal">
+    <div class="modal tutorial-content">
+        <h2><i class="fas fa-graduation-cap"></i> Card Counting Guide</h2>
+
+        <h3>What is Card Counting?</h3>
+        <p>Card counting is a strategy used in blackjack to determine whether the next hand is likely to give an advantage to the player or the dealer. By tracking the ratio of high to low cards remaining in the shoe, skilled players can adjust their bets and decisions accordingly.</p>
+
+        <h3>The Hi-Lo System</h3>
+        <p>The Hi-Lo system is the most popular counting method. Each card is assigned a value:</p>
+        <div class="card-values">
+            <div class="cv plus">
+                <div class="cards-label">2, 3, 4, 5, 6</div>
+                <div class="num">+1</div>
+                <div style="font-size:.75rem;color:#aaa">Low cards</div>
+            </div>
+            <div class="cv zero">
+                <div class="cards-label">7, 8, 9</div>
+                <div class="num">0</div>
+                <div style="font-size:.75rem;color:#aaa">Neutral</div>
+            </div>
+            <div class="cv minus">
+                <div class="cards-label">10, J, Q, K, A</div>
+                <div class="num">−1</div>
+                <div style="font-size:.75rem;color:#aaa">High cards</div>
+            </div>
+        </div>
+
+        <h3>Running Count</h3>
+        <p>The <strong>Running Count (RC)</strong> is the sum of all Hi-Lo values for every card you've seen dealt since the last shuffle. When a 5 is dealt, add +1. When a King is dealt, subtract 1. Keep a running total in your head.</p>
+        <div class="tip">💡 Tip: Practice counting in pairs — a low card (+1) and a high card (−1) cancel out to zero. Train yourself to spot these cancellations quickly.</div>
+
+        <h3>True Count</h3>
+        <p>The <strong>True Count (TC)</strong> adjusts for how many decks are left:</p>
+        <p style="text-align:center;font-size:1.1rem;color:#ffd700;margin:10px 0"><strong>True Count = Running Count ÷ Decks Remaining</strong></p>
+        <p>Example: If the RC is +6 and there are about 3 decks left, the TC is +2. The true count is what really matters for decision-making in multi-deck games.</p>
+
+        <h3>Using the Count</h3>
+        <p><strong>Positive TC (+2 or higher):</strong> The remaining shoe is rich in high cards (10s and Aces). This favors the player — increase your bets!</p>
+        <p><strong>Negative TC (−2 or lower):</strong> The remaining shoe has more low cards. This favors the dealer — bet the minimum.</p>
+        <p><strong>Neutral (−1 to +1):</strong> No significant edge — play basic strategy with standard bets.</p>
+
+        <h3>Practice Tips</h3>
+        <div class="tip">🎯 Start by memorizing the Hi-Lo values until they're automatic — you shouldn't have to think about whether a 5 is +1.</div>
+        <div class="tip">⚡ Count cards in pairs as they're dealt. Two cancelling cards = skip them mentally.</div>
+        <div class="tip">🔄 Use the "Check My Count" quiz after each hand to test your accuracy.</div>
+        <div class="tip">👀 Use "Peek at Count" sparingly — try to calculate it yourself first!</div>
+        <div class="tip">📈 Aim for 90%+ accuracy before you try adjusting your bets based on the count.</div>
+
+        <button class="btn btn-gold" onclick="closeTutorial()" style="width:100%;margin-top:16px">Got It!</button>
+    </div>
+</div>
+
+<!-- Strategy toast -->
+<div class="strat-toast" id="strat-toast"></div>
+
+<!-- Minimized count modal tab -->
+<div class="count-modal-mini" id="count-mini" onclick="restoreCountModal()">
+    <i class="fas fa-brain"></i> &nbsp;Open Count Quiz
+</div>
+
+<script>
+// ===========================  STATE  =======================================
+let GS = {};            // game state from server
+let betAmount = 0;
+let chipStack = [];      // for undo
+let peeking = false;
+let afterHandTimeout = null;
+let countModalIsAfterHand = false;
+let prevDealerCount = 0;
+let prevDealerShowAll = false;
+let prevPlayerCounts = [];
+let lastDealAnimMs = 0;
+let actionInProgress = false;
+let dealerScoreGen = 0;
+
+// ===========================  HELPERS  =====================================
+const $ = id => document.getElementById(id);
+const show = (el, v=true) => { if(typeof el==='string') el=$(el); if(v) el.style.removeProperty('display'); else el.style.display='none'; };
+const hide = el => show(el, false);
+
+function cardColor(suit_name) {
+    return (suit_name==='hearts'||suit_name==='diamonds') ? 'red' : 'black';
+}
+
+// ===========================  CLIENT-SIDE BASIC STRATEGY  ==================
+function cardNum(v) {
+    if(['J','Q','K'].includes(v)) return 10;
+    if(v==='A') return 11;
+    return parseInt(v);
+}
+
+function clientStrategy(hand, dealerUp) {
+    let s = hand.score, soft = hand.is_soft, pair = hand.can_split, dbl = hand.can_double;
+    let d = cardNum(dealerUp);
+    if(pair) {
+        let v = cardNum(hand.cards[0].value);
+        if(v===11) return 'split';
+        if(v===8) return 'split';
+        if(v===10) { /* fall through */ }
+        else if(v===5) { /* fall through */ }
+        else if(v===4) { if([5,6].includes(d)) return 'split'; }
+        else if([2,3,7].includes(v)) { if(d<=7) return 'split'; }
+        else if(v===6) { if(d<=6) return 'split'; }
+        else if(v===9) { if(d<=9 && d!==7) return 'split'; if(d===7) return 'stand'; }
+    }
+    if(soft) {
+        if(s>=20) return 'stand';
+        if(s===19) { if(dbl && d===6) return 'double'; return 'stand'; }
+        if(s===18) { if(dbl && [3,4,5,6].includes(d)) return 'double'; if([2,7,8].includes(d)) return 'stand'; return 'hit'; }
+        if(s===17) { if(dbl && [3,4,5,6].includes(d)) return 'double'; return 'hit'; }
+        if(s===15||s===16) { if(dbl && [4,5,6].includes(d)) return 'double'; return 'hit'; }
+        if(s===13||s===14) { if(dbl && [5,6].includes(d)) return 'double'; return 'hit'; }
+        return 'hit';
+    }
+    if(s>=17) return 'stand';
+    if(s>=13 && s<=16) return d<=6 ? 'stand' : 'hit';
+    if(s===12) return [4,5,6].includes(d) ? 'stand' : 'hit';
+    if(s===11) return dbl ? 'double' : 'hit';
+    if(s===10) return (dbl && d<=9) ? 'double' : 'hit';
+    if(s===9) return (dbl && d>=3 && d<=6) ? 'double' : 'hit';
+    return 'hit';
+}
+
+// ===========================  RENDERING  ===================================
+function resetCardTracking() {
+    prevDealerCount = 0; prevDealerShowAll = false; prevPlayerCounts = [];
+    $('result-area').innerHTML = ''; $('result-area').dataset.resultsKey = '';
+}
+
+function render() {
+    lastDealAnimMs = 0;
+
+    // Balance
+    $('balance').textContent = `$${GS.balance}`;
+    $('balance').style.color = GS.balance > 0 ? '#2ecc71' : '#e74c3c';
+
+    // Stats
+    $('st-played').textContent = GS.statistics.played;
+    $('st-won').textContent = GS.statistics.won;
+    $('st-lost').textContent = GS.statistics.lost;
+    $('st-pushed').textContent = GS.statistics.pushed;
+    $('st-bj').textContent = GS.statistics.blackjacks;
+    let net = GS.statistics.money_won - GS.statistics.money_lost;
+    $('st-net').textContent = `${net>=0?'+':''}$${net}`;
+    $('st-net').style.color = net>=0 ? '#2ecc71' : '#e74c3c';
+
+    // Strategy accuracy stat
+    if(GS.learn_mode && GS.counting_stats.strat_checks > 0) {
+        show('strat-row');
+        let pct = Math.round(GS.counting_stats.strat_correct / GS.counting_stats.strat_checks * 100);
+        $('st-strat').textContent = pct + '%';
+        $('st-strat').style.color = pct >= 70 ? '#2ecc71' : '#e74c3c';
+    } else {
+        hide('strat-row');
+    }
+
+    // Dealer
+    renderDealerHand();
+
+    // Player hands
+    renderPlayerHands();
+
+    // Results
+    renderResults();
+
+    // Shoe indicator
+    if(GS.learn_mode) {
+        show('shoe-wrap');
+        let pct = GS.deck_info.penetration;
+        $('shoe-fill').style.width = pct + '%';
+        $('shoe-pct').textContent = Math.round(pct) + '%';
+    } else {
+        hide('shoe-wrap');
+    }
+
+    // Count display
+    updateCountDisplay();
+
+    // Counting accuracy
+    if(GS.learn_mode) {
+        let cs = GS.counting_stats;
+        let tot = cs.checks;
+        let pct = tot > 0 ? Math.round(cs.correct/tot*100) : 0;
+        $('acc-pct').textContent = pct + '%';
+        $('acc-pct').style.color = pct >= 70 ? '#2ecc71' : pct >= 40 ? '#f39c12' : '#e74c3c';
+        $('acc-bar').style.width = pct + '%';
+        $('acc-correct').textContent = cs.correct;
+        $('acc-close').textContent = cs.close;
+        $('acc-total').textContent = tot;
+    }
+
+    // UI phase
+    updatePhaseUI();
+
+    // Learn mode toggle visual
+    $('learn-switch').className = 'switch' + (GS.learn_mode ? ' on' : '');
+    show('trainer-panel', GS.learn_mode);
+    show('hint-wrap', GS.learn_mode && GS.game_phase === 'playing');
+
+    // Balance top-up
+    show('topup-panel', GS.balance <= 0 && GS.game_phase === 'betting');
+}
+
+function renderDealerHand() {
+    let el = $('dealer-hand');
+    el.innerHTML = '';
+    let hand = GS.dealer_hand;
+    let showAll = GS.game_phase === 'finished' || GS.game_phase === 'dealer';
+
+    // Determine which cards need deal animation
+    let animateFrom;
+    if (!prevDealerShowAll && showAll && prevDealerCount >= 2) {
+        animateFrom = 1; // hole card reveal + any new draw cards
+    } else {
+        animateFrom = prevDealerCount;
+    }
+    let newCount = Math.max(0, hand.cards.length - animateFrom);
+    let dealerAnimMs = newCount > 0 ? (newCount - 1) * 350 + 600 : 0;
+
+    hand.cards.forEach((c, i) => {
+        let div = document.createElement('div');
+        let isNew = i >= animateFrom;
+        div.className = 'card' + (isNew ? ' card-deal' : '');
+        if(isNew) div.style.animationDelay = ((i - animateFrom) * 0.35) + 's';
+        if(i === 1 && !showAll) {
+            div.classList.add('hidden-card');
+            div.innerHTML = '<div class="card-back"></div>';
+        } else {
+            div.classList.add(cardColor(c.suit_name));
+            div.innerHTML = `<div class="card-value">${c.value}</div><div class="card-suit">${c.suit}</div><div class="card-value card-bottom">${c.value}</div>`;
         }
+        el.appendChild(div);
+    });
 
-        function showLoading(show = true) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
+    // Delay score reveal until cards finish animating
+    dealerScoreGen++;
+    let myGen = dealerScoreGen;
+    if(showAll) {
+        if(dealerAnimMs > 0) {
+            $('dealer-score').textContent = 'Score: ...';
+            setTimeout(() => { if(dealerScoreGen === myGen) $('dealer-score').textContent = `Score: ${hand.score}`; }, dealerAnimMs + 100);
+        } else {
+            $('dealer-score').textContent = `Score: ${hand.score}`;
         }
+    } else {
+        $('dealer-score').textContent = hand.cards.length ? 'Score: ?' : '';
+    }
 
-        function selectChip(amount) {
-            // Add selection to clicked chip
-            event.target.classList.add('selected');
-            
-            if (amount === 'allin') {
-                currentBet = gameState.balance;
-            } else {
-                currentBet += amount;
+    prevDealerCount = hand.cards.length;
+    prevDealerShowAll = showAll;
+    lastDealAnimMs = Math.max(lastDealAnimMs, dealerAnimMs);
+}
+
+function renderPlayerHands() {
+    let container = $('hands-container');
+    container.innerHTML = '';
+    GS.player_hands.forEach((hand, idx) => {
+        let section = document.createElement('div');
+        section.className = 'hand-section';
+        if(GS.game_phase === 'playing' && idx === GS.current_hand && GS.player_hands.length > 1)
+            section.classList.add('active');
+
+        let handDiv = document.createElement('div');
+        handDiv.className = 'hand';
+        let prevCount = prevPlayerCounts[idx] || 0;
+        hand.cards.forEach((c, ci) => {
+            let div = document.createElement('div');
+            let isNew = ci >= prevCount;
+            div.className = `card ${cardColor(c.suit_name)}` + (isNew ? ' card-deal' : '');
+            if(isNew) div.style.animationDelay = ((ci - prevCount) * 0.35) + 's';
+            div.innerHTML = `<div class="card-value">${c.value}</div><div class="card-suit">${c.suit}</div><div class="card-value card-bottom">${c.value}</div>`;
+            handDiv.appendChild(div);
+        });
+
+        let newCount = Math.max(0, hand.cards.length - prevCount);
+        let playerAnimMs = newCount > 0 ? (newCount - 1) * 350 + 600 : 0;
+        lastDealAnimMs = Math.max(lastDealAnimMs, playerAnimMs);
+
+        let scoreDiv = document.createElement('div');
+        scoreDiv.className = 'score';
+        scoreDiv.textContent = hand.cards.length ? `Score: ${hand.score}` : '';
+
+        section.appendChild(handDiv);
+        section.appendChild(scoreDiv);
+        container.appendChild(section);
+    });
+    prevPlayerCounts = GS.player_hands.map(h => h.cards.length);
+}
+
+function renderResults() {
+    let el = $('result-area');
+    if(GS.game_phase !== 'finished' || !GS.last_hand_results.length) {
+        el.innerHTML = ''; el.dataset.resultsKey = ''; return;
+    }
+    let key = GS.last_hand_results.map(r=>r.msg).join('|');
+    if(el.dataset.resultsKey === key) return; // already showing
+    el.innerHTML = '';
+    el.dataset.resultsKey = key;
+    let delay = lastDealAnimMs > 0 ? lastDealAnimMs + 400 : 0;
+    if(delay > 0) {
+        setTimeout(() => {
+            if(el.dataset.resultsKey !== key) return;
+            doRenderResults(el);
+        }, delay);
+    } else {
+        doRenderResults(el);
+    }
+}
+
+function doRenderResults(el) {
+    GS.last_hand_results.forEach(r => {
+        let div = document.createElement('div');
+        div.className = `result-banner ${r.r}`;
+        let icon = {win:'🎉',lose:'💔',bust:'💥',push:'🤝',blackjack:'🃏'}[r.r] || '';
+        div.textContent = `${icon} ${r.msg}`;
+        el.appendChild(div);
+    });
+}
+
+function updateCountDisplay() {
+    if(!GS.learn_mode) return;
+    if(peeking && GS.count_info) {
+        let rc = GS.count_info.running_count;
+        let tc = GS.count_info.true_count;
+        $('rc-val').textContent = (rc>=0?'+':'') + rc;
+        $('rc-val').className = 'val ' + (rc>0?'positive':rc<0?'negative':'neutral');
+        $('tc-val').textContent = (tc>=0?'+':'') + tc;
+        $('tc-val').className = 'val ' + (tc>0?'positive':tc<0?'negative':'neutral');
+    } else {
+        $('rc-val').textContent = '???';
+        $('rc-val').className = 'val hidden-count';
+        $('tc-val').textContent = '???';
+        $('tc-val').className = 'val hidden-count';
+    }
+}
+
+function updatePhaseUI() {
+    hide('betting-panel');
+    hide('actions-panel');
+    hide('insurance-panel');
+    hide('newhand-panel');
+
+    switch(GS.game_phase) {
+        case 'betting':
+            show('betting-panel');
+            break;
+        case 'playing':
+            show('actions-panel');
+            let ch = GS.player_hands[GS.current_hand];
+            $('btn-double').disabled = !ch || !ch.can_double || GS.bets[GS.current_hand] > GS.balance;
+            $('btn-split').disabled = !ch || !ch.can_split || GS.bets[GS.current_hand] > GS.balance;
+            // Insurance check
+            if(GS.dealer_hand.cards.length > 0 && GS.dealer_hand.cards[0].value === 'A' && !GS.insurance_decided && GS.player_hands.length === 1 && GS.player_hands[0].cards.length === 2) {
+                show('insurance-panel');
             }
-            
-            // Ensure bet doesn't exceed balance
-            if (currentBet > gameState.balance) {
-                currentBet = gameState.balance;
-            }
-            
-            updateCurrentBet();
+            break;
+        case 'finished':
+            show('newhand-panel');
+            break;
+    }
+}
+
+// ===========================  BETTING  =====================================
+function addChip(val) {
+    if(val === 'all') {
+        betAmount = GS.balance;
+        chipStack = [GS.balance];
+    } else {
+        betAmount = Math.min(betAmount + val, GS.balance);
+        chipStack.push(val);
+    }
+    $('bet-display').textContent = `$${betAmount}`;
+}
+function undoChip() {
+    if(!chipStack.length) return;
+    let last = chipStack.pop();
+    betAmount = Math.max(0, betAmount - last);
+    $('bet-display').textContent = `$${betAmount}`;
+}
+function clearChips() {
+    betAmount = 0; chipStack = [];
+    $('bet-display').textContent = '$0';
+}
+
+function placeBet() {
+    if(betAmount <= 0) return;
+    api('place-bet', {bet: betAmount}, data => {
+        GS = data.game_state;
+        betAmount = 0; chipStack = [];
+        $('bet-display').textContent = '$0';
+        resetCardTracking();
+        render();
+        if(data.reshuffled) showShuffleBanner();
+        if(GS.game_phase === 'finished') afterHand();
+    });
+}
+
+// ===========================  GAME ACTIONS  ================================
+function doAction(action) {
+    if(actionInProgress) return;
+    actionInProgress = true;
+    // Strategy feedback in learn mode
+    if(GS.learn_mode && GS.game_phase === 'playing') {
+        let ch = GS.player_hands[GS.current_hand];
+        let dealerUp = GS.dealer_hand.cards[0].value;
+        let rec = clientStrategy(ch, dealerUp);
+        let correct = action === rec;
+        showStratToast(correct, action, rec);
+        // Fire-and-forget server tracking
+        api('check-strategy', {action: action}, null, true);
+    }
+    api(action, {}, data => {
+        GS = data.game_state;
+        render();
+        actionInProgress = false;
+        if(GS.game_phase === 'finished') afterHand();
+    });
+}
+
+function takeInsurance(yes) {
+    hide('insurance-panel');
+    api('insurance', {insurance: yes}, data => {
+        GS = data.game_state;
+        render();
+        if(data.insurance_result === 'win') showMsg('Insurance pays 2:1!', 'win');
+        else if(data.insurance_result === 'lose') showMsg('Insurance lost', 'lose');
+    });
+}
+
+// ===========================  AFTER HAND  ==================================
+function afterHand() {
+    if(afterHandTimeout) { clearTimeout(afterHandTimeout); afterHandTimeout = null; }
+    if(GS.learn_mode) {
+        // Wait for card animations to finish + review time before showing count quiz
+        let delay = Math.max(3000, lastDealAnimMs + 2500);
+        afterHandTimeout = setTimeout(() => openCountModal(true), delay);
+    }
+}
+
+function startNewHand() {
+    if(afterHandTimeout) { clearTimeout(afterHandTimeout); afterHandTimeout = null; }
+    $('count-modal').classList.remove('show');
+    hide('count-mini');
+    api('new-game', {}, d => { GS=d.game_state; resetCardTracking(); render(); });
+}
+
+// ===========================  COUNT MODAL  =================================
+function openCountModal(fromAfterHand) {
+    countModalIsAfterHand = fromAfterHand || false;
+    $('count-guess').value = '';
+    $('count-result').className = 'modal-result';
+    $('count-result').style.display = 'none';
+    hide('count-reveal');
+    hide('count-next-btn');
+    show('count-submit-btn');
+    $('count-next-btn').innerHTML = countModalIsAfterHand ? '<i class="fas fa-forward"></i> Next Hand' : '<i class="fas fa-times"></i> Close';
+    $('count-modal').classList.add('show');
+    setTimeout(() => $('count-guess').focus(), 200);
+}
+
+function submitCount() {
+    let guess = parseInt($('count-guess').value);
+    if(isNaN(guess)) { $('count-guess').focus(); return; }
+    hide('count-submit-btn');
+    api('check-count', {count: guess}, data => {
+        let el = $('count-result');
+        el.textContent = data.message;
+        el.className = `modal-result ${data.result}`;
+        el.style.display = 'block';
+        $('modal-rc').textContent = (data.actual_running_count>=0?'+':'') + data.actual_running_count;
+        $('modal-tc').textContent = (data.true_count>=0?'+':'') + data.true_count;
+        show('count-reveal');
+        show('count-next-btn');
+        // Update accuracy display
+        GS.counting_stats = data.counting_stats;
+        render();
+    });
+}
+
+function closeCountModal() {
+    $('count-modal').classList.remove('show');
+    hide('count-mini');
+    if(afterHandTimeout) { clearTimeout(afterHandTimeout); afterHandTimeout = null; }
+    if(countModalIsAfterHand) {
+        api('new-game', {}, d => { GS=d.game_state; resetCardTracking(); render(); });
+    }
+}
+
+function minimizeCountModal() {
+    $('count-modal').classList.remove('show');
+    show('count-mini');
+}
+
+function restoreCountModal() {
+    hide('count-mini');
+    $('count-modal').classList.add('show');
+    setTimeout(() => $('count-guess').focus(), 200);
+}
+
+// ===========================  LEARN MODE  ==================================
+function toggleLearnMode() {
+    let newMode = !GS.learn_mode;
+    api('toggle-learn-mode', {learn_mode: newMode}, d => {
+        GS=d.game_state; peeking=false;
+        if(GS.game_phase === 'finished') {
+            if(afterHandTimeout) { clearTimeout(afterHandTimeout); afterHandTimeout = null; }
+            api('new-game', {}, d2 => { GS=d2.game_state; resetCardTracking(); render(); });
+        } else {
+            render();
         }
+    });
+}
 
-        function undoLastChip() {
-            // Remove the last selected chip
-            const selectedChips = document.querySelectorAll('.chip.selected');
-            if (selectedChips.length > 0) {
-                const lastChip = selectedChips[selectedChips.length - 1];
-                lastChip.classList.remove('selected');
-                
-                // Get the amount from the chip text
-                const chipText = lastChip.textContent;
-                if (chipText === 'ALL IN') {
-                    currentBet = 0;
-                } else {
-                    const amount = parseInt(chipText.replace('$', ''));
-                    currentBet = Math.max(0, currentBet - amount);
-                }
-                
-                updateCurrentBet();
-            }
-        }
+function togglePeek() {
+    peeking = !peeking;
+    if(peeking) {
+        api('toggle-count-display', {show_count: true}, d => { GS=d.game_state; render(); $('peek-btn').innerHTML='<i class="fas fa-eye-slash"></i> Hide Count'; });
+    } else {
+        api('toggle-count-display', {show_count: false}, d => { GS=d.game_state; render(); $('peek-btn').innerHTML='<i class="fas fa-eye"></i> Peek at Count'; });
+    }
+}
 
-        function clearAllChips() {
-            // Remove all selections
-            document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('selected'));
-            currentBet = 0;
-            updateCurrentBet();
-        }
+function showHint() {
+    api('get-hint', {}, data => {
+        if(!data.success) return;
+        let soft = data.is_soft ? ' (soft)' : '';
+        showMsg(`Your ${data.player_score}${soft} vs dealer ${data.dealer_shows} → ${data.recommendation.toUpperCase()}\n${data.count_advice}`, 'info', 4000);
+    });
+}
 
-        function updateCurrentBet() {
-            document.getElementById('current-bet-amount').textContent = `$${currentBet}`;
-        }
+function newShoe() {
+    api('new-shoe', {}, d => {
+        if(d.success) { GS=d.game_state; peeking=false; render(); showShuffleBanner(); }
+    });
+}
 
-        function addBalance(amount) {
-            showLoading(true);
-            fetch('/api/add-balance', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ amount: amount })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false);
-                if (data.success) {
-                    gameState = data.game_state;
-                    renderGame();
-                    showMessage(`Added $${amount} to your balance!`, 'success');
-                } else {
-                    showMessage(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error('Error:', error);
-                showMessage('Error adding balance', 'error');
-            });
-        }
+function openTutorial() { $('tutorial-modal').classList.add('show'); }
+function closeTutorial() { $('tutorial-modal').classList.remove('show'); }
 
-        function updateGameState() {
-            fetch('/api/game-state')
-                .then(response => response.json())
-                .then(data => {
-                    gameState = data;
-                    renderGame();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showMessage('Error loading game state', 'error');
-                });
-        }
+// ===========================  BALANCE  =====================================
+function addBal(amt) {
+    api('add-balance', {amount: amt}, d => { GS=d.game_state; render(); });
+}
 
-        function renderGame() {
-            // Update balance
-            document.getElementById('balance').textContent = `$${gameState.balance}`;
+// ===========================  STRATEGY TOAST  ==============================
+function showStratToast(correct, action, rec) {
+    let el = $('strat-toast');
+    if(correct) {
+        el.className = 'strat-toast correct';
+        el.innerHTML = `<i class="fas fa-check"></i> ${action.toUpperCase()} is correct!`;
+    } else {
+        el.className = 'strat-toast wrong';
+        el.innerHTML = `<i class="fas fa-times"></i> Basic strategy says <strong>${rec.toUpperCase()}</strong>`;
+    }
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2800);
+}
 
-            // Update statistics
-            document.getElementById('hands-played').textContent = gameState.statistics.hands_played;
-            document.getElementById('hands-won').textContent = gameState.statistics.hands_won;
-            document.getElementById('hands-lost').textContent = gameState.statistics.hands_lost;
-            document.getElementById('blackjacks').textContent = gameState.statistics.blackjacks;
-            const netProfit = gameState.statistics.money_won - gameState.statistics.money_lost;
-            document.getElementById('net-profit').textContent = `$${netProfit}`;
+// ===========================  MESSAGE OVERLAY  =============================
+function showMsg(text, type='info', dur=3000) {
+    let el = $('result-area');
+    let div = document.createElement('div');
+    div.className = `result-banner ${type}`;
+    div.textContent = text;
+    el.appendChild(div);
+    setTimeout(() => div.remove(), dur);
+}
 
-            // Render dealer hand
-            renderHand('dealer-hand', gameState.dealer_hand, gameState.game_phase === 'finished');
-            document.getElementById('dealer-score').textContent = 
-                gameState.game_phase === 'finished' ? `Score: ${gameState.dealer_hand.score}` : 'Score: ?';
+function showShuffleBanner() {
+    let div = document.createElement('div');
+    div.className = 'shuffle-banner';
+    div.innerHTML = '🔄 Shoe Reshuffled<br><span style="font-size:.9rem">Count Reset to 0</span>';
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 2600);
+}
 
-            // Render all player hands
-            renderAllPlayerHands();
+// ===========================  API HELPER  ==================================
+function api(endpoint, body={}, cb=null, fireAndForget=false) {
+    let opts = {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)};
+    if(endpoint === 'game-state') opts = {method:'GET'};
+    fetch(`/api/${endpoint}`, opts)
+        .then(r => r.json())
+        .then(d => { if(cb) cb(d); })
+        .catch(e => { if(!fireAndForget) console.error('API error:', e); });
+}
 
-            // Update UI based on game phase
-            updateUI();
-            
-            // Show balance topup if balance is 0
-            if (gameState.balance <= 0) {
-                document.getElementById('balance-topup').style.display = 'block';
-                document.getElementById('betting-area').style.display = 'none';
-            } else {
-                document.getElementById('balance-topup').style.display = 'none';
-            }
-        }
+// ===========================  INIT  ========================================
+api('game-state', {}, d => { GS = d; render(); });
 
-        function renderAllPlayerHands() {
-            const handsContainer = document.getElementById('hands-container');
-            handsContainer.innerHTML = '';
-
-            gameState.player_hands.forEach((hand, index) => {
-                const handSection = document.createElement('div');
-                handSection.className = 'hand-section';
-                if (index === gameState.current_hand) {
-                    handSection.classList.add('active');
-                }
-
-                const handDiv = document.createElement('div');
-                handDiv.className = 'hand';
-                handDiv.id = `player-hand-${index}`;
-
-                const scoreDiv = document.createElement('div');
-                scoreDiv.className = 'score';
-                scoreDiv.id = `player-score-${index}`;
-                scoreDiv.textContent = `Score: ${hand.score}`;
-
-                handSection.appendChild(handDiv);
-                handSection.appendChild(scoreDiv);
-                handsContainer.appendChild(handSection);
-
-                // Render cards for this hand
-                renderHand(`player-hand-${index}`, hand, true);
-            });
-        }
-
-        function renderHand(containerId, hand, showAll = true) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-
-            hand.cards.forEach((card, index) => {
-                const cardElement = document.createElement('div');
-                
-                // Base card class
-                cardElement.className = 'card';
-                
-                // Add animation classes with delays for smooth dealing
-                if (index === 0) {
-                    cardElement.classList.add('card-deal-animation');
-                } else {
-                    cardElement.classList.add('card-deal-animation-delayed');
-                    cardElement.style.animationDelay = `${index * 0.4}s`;
-                }
-                
-                if (containerId === 'dealer-hand' && index === 1 && !showAll) {
-                    cardElement.classList.add('hidden-card');
-                    cardElement.innerHTML = '<div class="card-back"></div>';
-                } else {
-                    cardElement.classList.add(card.suit_name === 'hearts' || card.suit_name === 'diamonds' ? 'red' : 'black');
-                    cardElement.innerHTML = `
-                        <div class="card-value">${card.value}</div>
-                        <div class="card-suit">${getSuitSymbol(card.suit)}</div>
-                        <div class="card-value card-bottom">${card.value}</div>
-                    `;
-                }
-                
-                container.appendChild(cardElement);
-            });
-        }
-
-        function getSuitSymbol(suit) {
-            const symbols = {
-                '♥': '♥',
-                '♦': '♦',
-                '♠': '♠',
-                '♣': '♣'
-            };
-            return symbols[suit] || suit;
-        }
-
-        function updateUI() {
-            const bettingArea = document.getElementById('betting-area');
-            const gameActions = document.getElementById('game-actions');
-            const insuranceArea = document.getElementById('insurance-area');
-
-            // Hide all areas first
-            bettingArea.style.display = 'none';
-            gameActions.style.display = 'none';
-            insuranceArea.style.display = 'none';
-
-            // Show appropriate area based on game phase
-            switch (gameState.game_phase) {
-                case 'betting':
-                    bettingArea.style.display = 'block';
-                    break;
-                case 'playing':
-                    gameActions.style.display = 'block';
-                    // Check for insurance
-                    if (gameState.dealer_hand.cards.length > 0 && 
-                        gameState.dealer_hand.cards[0].value === 'A' && 
-                        gameState.insurance_bet === 0) {
-                        insuranceArea.style.display = 'block';
-                    }
-                    // Update button states
-                    document.getElementById('double-btn').disabled = !gameState.player_hands[0].can_double;
-                    document.getElementById('split-btn').disabled = !gameState.player_hands[0].can_split;
-                    break;
-                case 'dealer':
-                case 'finished':
-                    // Show final results
-                    break;
-            }
-        }
-
-        function placeBet() {
-            if (!currentBet || currentBet <= 0) {
-                showMessage('Please select a chip to bet', 'error');
-                return;
-            }
-
-            if (currentBet > gameState.balance) {
-                showMessage('Insufficient funds', 'error');
-                return;
-            }
-
-            showLoading(true);
-            fetch('/api/place-bet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ bet: currentBet })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false);
-                if (data.success) {
-                    gameState = data.game_state;
-                    currentBet = 0;
-                    selectedChip = null;
-                    document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('selected'));
-                    updateCurrentBet();
-                    renderGame();
-                    if (gameState.game_phase === 'finished') {
-                        showMessage('Blackjack! You win 3:2!', 'success');
-                        autoNextHand();
-                    }
-                } else {
-                    showMessage(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error('Error:', error);
-                showMessage('Error placing bet', 'error');
-            });
-        }
-
-
-        function takeInsurance(insurance) {
-            showLoading(true);
-            fetch('/api/insurance', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ insurance: insurance })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false);
-                if (data.success) {
-                    gameState = data.game_state;
-                    renderGame();
-                    if (data.insurance_result === 'win') {
-                        showMessage('Insurance pays 2:1!', 'success');
-                    } else if (data.insurance_result === 'lose') {
-                        showMessage('Insurance lost', 'error');
-                    }
-                    // Hide insurance area after selection
-                    document.getElementById('insurance-area').style.display = 'none';
-                }
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error('Error:', error);
-                showMessage('Error with insurance', 'error');
-            });
-        }
-
-        function hit() {
-            makeAction('/api/hit');
-        }
-
-        function stand() {
-            makeAction('/api/stand');
-        }
-
-        function doubleDown() {
-            makeAction('/api/double');
-        }
-
-        function split() {
-            makeAction('/api/split');
-        }
-
-        function makeAction(url) {
-            showLoading(true);
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false);
-                if (data.success) {
-                    gameState = data.game_state;
-                    renderGame();
-                    
-                    // Auto-start next hand if game is finished
-                    if (gameState.game_phase === 'finished') {
-                        autoNextHand();
-                    }
-                } else {
-                    showMessage(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error('Error:', error);
-                showMessage('Error with action', 'error');
-            });
-        }
-
-        function newGame() {
-            showLoading(true);
-            fetch('/api/new-game', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false);
-                if (data.success) {
-                    gameState = data.game_state;
-                    currentBet = 0;
-                    selectedChip = null;
-                    document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('selected'));
-                    updateCurrentBet();
-                    renderGame();
-                    showMessage('New game started!', 'info');
-                }
-            })
-            .catch(error => {
-                showLoading(false);
-                console.error('Error:', error);
-                showMessage('Error starting new game', 'error');
-            });
-        }
-
-        function autoNextHand() {
-            // Automatically start next hand after a short delay
-            setTimeout(() => {
-                newGame();
-            }, 2000);
-        }
-
-        // Initialize game
-        updateGameState();
-    </script>
+// ===========================  KEYBOARD SHORTCUTS  ==========================
+document.addEventListener('keydown', e => {
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    let key = e.key.toLowerCase();
+    if(GS.game_phase === 'playing' && !actionInProgress) {
+        if(key === 'h') doAction('hit');
+        else if(key === 's') doAction('stand');
+        else if(key === 'd') doAction('double');
+        else if(key === 'p') doAction('split');
+    }
+    if(GS.game_phase === 'betting' && key === 'enter' && betAmount > 0) placeBet();
+    if(GS.game_phase === 'finished' && key === 'n') startNewHand();
+});
+</script>
 </body>
 </html>

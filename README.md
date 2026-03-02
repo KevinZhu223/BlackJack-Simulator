@@ -1,60 +1,75 @@
 # BlackJack Casino Simulator
 
-A professional, feature-rich BlackJack simulator built with Python Flask and modern web technologies. Experience the thrill of casino BlackJack with realistic gameplay, beautiful animations, and authentic casino features.
+A professional, feature-rich BlackJack simulator and card-counting trainer built with Python Flask and modern web technologies. Experience the thrill of casino BlackJack and practice advanced advantage play with realistic gameplay, beautiful animations, and authentic casino features.
 
-![BlackJack Casino](https://img.shields.io/badge/BlackJack-Casino-green)
-![Python](https://img.shields.io/badge/Python-3.8+-blue)
-![Flask](https://img.shields.io/badge/Flask-2.3+-red)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+## Project Status
+
+Current Version 1.1 - Stable
+
+The project has recently undergone significant usability and feature enhancements:
+- Card-Counting Trainer: Fully integrated Hi-Lo counting system with real-time tracking and true count calculation.
+- Count Quiz System: Interactive modal to test your running count after each hand, including accuracy statistics.
+- Strategy Feedback: Real-time basic strategy advice during play to help users learn optimal decisions.
+- Enhanced UX: Improved card dealing animations (350ms stagger), dealer score delays, and result banner timing for a realistic experience.
+- Minimized UI: Non-intrusive counting quiz that can be minimized to inspect the table during training.
+- Keyboard Support: Professional keyboard shortcuts for all major actions (H for Hit, S for Stand, D for Double, P for Split, N for New Hand).
+- Bug Fixes: Resolved issues with insurance panels, learn mode persistence, and layout rendering.
 
 ## Features
 
 ### Core Gameplay
-- **Standard Casino Rules**: Follows authentic BlackJack rules
-- **Multiple Actions**: Hit, Stand, Double Down, Split, Insurance
-- **Realistic Payouts**: 3:2 for BlackJack, 2:1 for Insurance
-- **Dealer AI**: Automatic dealer play following casino rules (hit on 16, stand on 17+)
+- Standard Casino Rules: Follows authentic BlackJack rules
+- Multiple Actions: Hit, Stand, Double Down, Split, Insurance
+- Realistic Payouts: 3:2 for BlackJack, 2:1 for Insurance
+- Dealer AI: Automatic dealer play following casino rules (hit on 16, stand on 17+)
+
+### Training Tools (Learn Mode)
+- Hi-Lo Counting: Server-side tracking of the running and true count.
+- Count Quiz: Manual and automatic count checks to verify your accuracy.
+- Strategy Hints: Dynamic advice based on basic strategy and current dealer up-card.
+- Shoe Statistics: Visual indicators for deck penetration and shoe status.
+- Accuracy Tracking: Detailed stats on counting and strategy decision precision.
 
 ### Visual Experience
-- **Casino Table Design**: Authentic green felt table with wooden rails
-- **Realistic Cards**: Beautiful card designs with smooth dealing animations
-- **3D Casino Chips**: Professional chip design with hover effects
-- **Smooth Animations**: Cards deal one at a time with realistic physics
-- **Responsive Design**: Works perfectly on desktop and mobile
+- Casino Table Design: Authentic green felt table with wooden rails
+- Realistic Cards: Beautiful card designs with smooth staggered dealing animations
+- 3D Casino Chips: Professional chip design with hover effects
+- Smooth Animations: Cards deal one at a time with realistic physics
+- Responsive Design: Works perfectly on desktop and mobile
 
 ### Betting System
-- **Chip-Based Betting**: Click chips to build your bet (additive system)
-- **Undo/Clear**: Remove chips with undo or clear all
-- **All-In Option**: Bet your entire balance with one click
-- **Balance Management**: Add funds when balance runs low
-- **Auto-Next Hand**: Seamless continuous gameplay
+- Chip-Based Betting: Click chips to build your bet (additive system)
+- Undo/Clear: Remove chips with undo or clear all
+- All-In Option: Bet your entire balance with one click
+- Balance Management: Add funds when balance runs low
+- Keyboard Support: Enter key to place bets, alphanumeric keys for actions
 
 ### Advanced Features
-- **Split Hands**: Split pairs and play multiple hands simultaneously
-- **Insurance**: Protect against dealer BlackJack
-- **Statistics Tracking**: Track wins, losses, BlackJacks, and profit
-- **Session Persistence**: Game state maintained across browser sessions
+- Split Hands: Split pairs and play multiple hands simultaneously
+- Insurance: Protect against dealer BlackJack with proper decision tracking
+- Statistics Tracking: Track wins, losses, BlackJacks, and profit
+- Session Persistence: Game state maintained across browser sessions
 
 ## Tech Stack
 
 ### Backend
-- **Python 3.8+**: Core programming language
-- **Flask 2.3.3**: Web framework for API and routing
-- **Object-Oriented Design**: Clean, maintainable code structure
-- **Session Management**: In-memory game state storage
+- Python 3.8+: Core programming language
+- Flask 2.3.3: Web framework for API and routing
+- Object-Oriented Design: Clean, maintainable code structure
+- Session Management: In-memory game state storage
 
 ### Frontend
-- **HTML5**: Semantic markup structure
-- **CSS3**: Modern styling with gradients, animations, and flexbox
-- **JavaScript (ES6+)**: Interactive gameplay and API communication
-- **Font Awesome**: Professional icons and symbols
+- HTML5: Semantic markup structure
+- CSS3: Modern styling with gradients, animations, and flexbox
+- JavaScript (ES6+): Interactive gameplay, animation management, and API communication
+- Font Awesome: Professional icons and symbols
 
 ### Key Technologies
-- **CSS Animations**: Smooth card dealing and chip interactions
-- **CSS Grid/Flexbox**: Responsive layout system
-- **Fetch API**: Modern HTTP requests
-- **JSON**: Data serialization and API responses
-- **SVG**: Scalable favicon and graphics
+- CSS Animations: Smooth card dealing (staggered) and chip interactions
+- CSS Grid/Flexbox: Responsive layout system
+- Fetch API: Modern async HTTP requests
+- JSON: Data serialization and API responses
+- SVG: Scalable favicon and graphics
 
 ## Quick Start
 
@@ -64,24 +79,24 @@ A professional, feature-rich BlackJack simulator built with Python Flask and mod
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repository
    ```bash
    git clone <repository-url>
    cd BlackJack-Simulator
    ```
 
-2. **Install dependencies**
+2. Install dependencies
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the application**
+3. Run the application
    ```bash
    python app.py
    ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:5000`
+4. Open your browser
+   Navigate to http://localhost:5000
 
 ### Alternative: Use the launcher
 ```bash
@@ -92,12 +107,21 @@ Choose between command-line or web version.
 ## How to Play
 
 ### Basic Gameplay
-1. **Place Your Bet**: Click casino chips to build your bet amount
-2. **Deal Cards**: Click "Place Bet" to start the hand
-3. **Make Decisions**: 
-   - **Hit**: Take another card
-   - **Stand**: Keep your current hand
-   - **Double Down**: Double your bet and take exactly one more card
+1. Place Your Bet: Click casino chips or press Enter to deal
+2. Deal Cards: Click "Place Bet" to start the hand
+3. Make Decisions (Keyboard shortcuts in brackets): 
+   - Hit [H]: Take another card
+   - Stand [S]: Keep your current hand
+   - Double Down [D]: Double your bet and take exactly one more card
+   - Split [P]: Split a pair into two separate hands
+   - Insurance: Buy protection if dealer shows an Ace
+
+### Card Counting
+1. Toggle Learn Mode in the header
+2. Track the count in your head using Hi-Lo (+1, 0, -1)
+3. After the hand, enter your guess in the quiz
+4. Check your Accuracy stats in the sidebar to improve your skills
+5. Use "Peek" or "Hint" if you get stuck
    - **Split**: Split pairs into two separate hands
    - **Insurance**: Protect against dealer BlackJack (when dealer shows Ace)
 
